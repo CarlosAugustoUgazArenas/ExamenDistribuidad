@@ -52,7 +52,7 @@ public class infraccionImpl implements infraccionService{
     @Override
     public Infraccion findByInfraccion(String infraccion) {
         try {
-			return repository.findByInfracion(infraccion);
+			return repository.findByinfraccion(infraccion);
 		} catch (ValidateServiceException | NoDataFoundException e) {
 			log.info(e.getMessage(), e);
 			throw e;

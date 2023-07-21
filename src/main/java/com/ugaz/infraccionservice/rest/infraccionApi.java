@@ -20,7 +20,7 @@ import com.ugaz.infraccionservice.service.infraccionService;
 import com.ugaz.infraccionservice.service.userService;
 
 @RestController
-@RequestMapping("/api/infraciones")
+@RequestMapping("/api/infracciones")
 public class infraccionApi {
     @Autowired
 	private infraccionService service;
