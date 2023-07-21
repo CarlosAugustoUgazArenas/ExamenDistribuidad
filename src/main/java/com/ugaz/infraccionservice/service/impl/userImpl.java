@@ -12,6 +12,7 @@ import com.ugaz.infraccionservice.exceptions.NoDataFoundException;
 import com.ugaz.infraccionservice.exceptions.ValidateServiceException;
 import com.ugaz.infraccionservice.repository.userRepository;
 import com.ugaz.infraccionservice.service.userService;
+import com.ugaz.infraccionservice.validator.userValidator;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -49,30 +50,102 @@ public class userImpl implements userService {
 			throw new GeneralServiceException(e.getMessage(), e);
 		}
 	}
-
-    @Override
-    public List<user> findByNombreContaining(String nombre) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    @Override
+	@Override
+	@Transactional(readOnly = true)
     public user findByNumDoc(String nrodoc) {
-        // TODO Auto-generated method stub
-        return null;
+        try {
+			return repository.findByNumDoc(nrodoc);
+		} catch (ValidateServiceException | NoDataFoundException e) {
+			log.info(e.getMessage(), e);
+			throw e;
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+			throw new GeneralServiceException(e.getMessage(), e);
+		}
     }
+    @Override
+	@Transactional(readOnly = true)
+    public List<user> findByNombreContaining(String nombre) {
+        try {
+			return repository.findByNombreContaining(nombre);
+		} catch (ValidateServiceException | NoDataFoundException e) {
+			log.info(e.getMessage(), e);
+			throw e;
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+			throw new GeneralServiceException(e.getMessage(), e);
+		}
+    }
+    
 	@Override
+	@Transactional
 	public user create(user obj) {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			//Validación
+			userValidator.save(obj);
+			user user = findByNumDoc(obj.getNumDoc());
+			if(user!=null) {
+				throw new ValidateServiceException("Ya hay un registro con el numero del documento");
+			}
+			//Guardamos
+			obj.setEstado(true);
+			return repository.save(obj);
+		} catch (ValidateServiceException | NoDataFoundException e) {
+			log.info(e.getMessage(), e);
+			throw e;
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+			throw new GeneralServiceException(e.getMessage(), e);
+		}
 	}
 	@Override
+	@Transactional
 	public user update(user obj) {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			userValidator.save(obj);
+			user userDb=findById(obj.getIdUsers());
+			if(userDb==null) {
+				throw new ValidateServiceException("No hay un registro con ese ID");
+			}
+			//Validación de nombre repetido
+			user persona=findByNumDoc(obj.getNumDoc());
+			if(persona!=null && obj.getIdUsers()!=persona.getIdUsers()) {
+				throw new ValidateServiceException("Ya hay un registro con ese DNI");
+			}
+			//Actualizamos la categoría
+			userDb.setNombre(obj.getNombre());
+			userDb.setApellido(obj.getApellido());
+			userDb.setEmail(obj.getEmail());
+			userDb.setNumDoc(obj.getNumDoc());
+			userDb.setTelefono(obj.getTelefono());
+			
+			return repository.save(userDb);
+		} catch (ValidateServiceException | NoDataFoundException e) {
+			log.info(e.getMessage(), e);
+			throw e;
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+			throw new GeneralServiceException(e.getMessage(), e);
+		}
 	}
     @Override
+	@Transactional
     public int delete(int id) {
-        // TODO Auto-generated method stub
-        return 0;
+        try {
+			user personaDb= findById(id);
+			if(personaDb==null) {
+				return 0;
+			}else {
+				personaDb.setEstado(false);
+				repository.save(personaDb);
+				return 1;
+			}
+		} catch (ValidateServiceException | NoDataFoundException e) {
+			log.info(e.getMessage(), e);
+			throw e;
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+			throw new GeneralServiceException(e.getMessage(), e);
+		}
     }
 }
