@@ -18,7 +18,7 @@ import com.ugaz.infraccionservice.entity.user;
 import com.ugaz.infraccionservice.service.userService;
 
 @RestController
-@RequestMapping("/api/usuarios")
+@RequestMapping("/api/user")
 public class userApi {
     @Autowired
 	private userService service;

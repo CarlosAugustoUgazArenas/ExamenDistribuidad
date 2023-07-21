@@ -13,4 +13,8 @@ public class MainController {
 	public String getInfraccion() {
 		return "infraccion";
 	}
+	@GetMapping("/user")
+	public String getUser() {
+		return "user";
+	}
 }

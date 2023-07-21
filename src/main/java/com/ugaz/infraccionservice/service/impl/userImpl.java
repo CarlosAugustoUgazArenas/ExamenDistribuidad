@@ -112,7 +112,7 @@ public class userImpl implements userService {
 			if(persona!=null && obj.getIdUsers()!=persona.getIdUsers()) {
 				throw new ValidateServiceException("Ya hay un registro con ese DNI");
 			}
-			//Actualizamos la categoría
+			//Actualizamos 
 			userDb.setNombre(obj.getNombre());
 			userDb.setApellido(obj.getApellido());
 			userDb.setEmail(obj.getEmail());
